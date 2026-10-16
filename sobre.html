@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre mim | Portfólio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="sobre">
+
+  <div class="loader" id="loader">
+    <h1>F<span>/</span></h1>
+    <p>CARREGANDO EXPERIÊNCIA DIGITAL</p>
+    <div class="loader-track"><div id="loader-bar"></div></div>
+    <p id="loader-percent">00%</p>
+  </div>
+
+  <div class="cursor-glow"></div>
+  <canvas id="space"></canvas>
+  <canvas id="three-scene"></canvas>
+
+  <header class="topbar">
+    <a class="brand" href="index.html">F/ PORTFÓLIO</a>
+    <nav>
+      <a href="index.html">INÍCIO</a>
+      <a href="sobre.html">SOBRE</a>
+      <a href="stack.html">STACK</a>
+      <a href="projetos.html">PROJETOS</a>
+      <a href="contato.html">CONTATO</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <p class="eyebrow reveal">02 / SOBRE MIM</p>
+
+    <h1 class="page-title reveal">
+      CÓDIGO COM<br><em>INTENÇÃO.</em>
+    </h1>
+
+    <div class="content-block reveal">
+      <p class="description">
+        Meu nome é <strong>SEU NOME COMPLETO</strong> e sou
+        desenvolvedor <strong>SUA ÁREA</strong>.
+      </p>
+
+      <p>
+        Escreva aqui sua apresentação profissional, sua formação,
+        como começou na programação e quais são seus objetivos.
+        Conte também o que mais gosta de desenvolver.
+      </p>
+    </div>
+
+    <div class="info-grid">
+      <article class="info-card reveal">
+        <span>01 / CRIATIVIDADE</span>
+        <h2>Ideias</h2>
+        <p>Transformando conceitos em experiências digitais.</p>
+      </article>
+
+      <article class="info-card reveal">
+        <span>02 / APRENDIZADO</span>
+        <h2>Evolução</h2>
+        <p>Aprendendo novas tecnologias e desenvolvendo projetos.</p>
+      </article>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
