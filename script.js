@@ -1,4 +1,4 @@
-/* CENA 3D - ESFERA CROMADA DIVIDIDA */
+/* CENA 3D - ORBE CROMADO */
 const loader = document.getElementById("loader");
 const loaderBar = document.getElementById("loader-bar");
 const loaderPercent = document.getElementById("loader-percent");
@@ -18,13 +18,27 @@ if (loader) {
   }, 50);
 }
 
+const cursorGlow = document.querySelector(".cursor-glow");
+
+if (cursorGlow) {
+  document.addEventListener("pointermove", (event) => {
+    cursorGlow.style.setProperty("--mouse-x", event.clientX + "px");
+    cursorGlow.style.setProperty("--mouse-y", event.clientY + "px");
+    cursorGlow.classList.add("visible");
+  });
+
+  document.addEventListener("pointerleave", () => {
+    cursorGlow.classList.remove("visible");
+  });
+}
+
 const canvas = document.getElementById("three-scene");
 
 if (canvas && typeof THREE !== "undefined") {
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
-    40,
+    38,
     window.innerWidth / window.innerHeight,
     0.1,
     100
@@ -44,60 +58,40 @@ if (canvas && typeof THREE !== "undefined") {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
   }
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.2;
 
-
-  /* AMBIENTE DE REFLEXO (gerado por código, sem imagens externas) */
+  /* Reflexos de estúdio gerados localmente para o material cromado. */
   function criarAmbiente() {
     const c = document.createElement("canvas");
     c.width = 1024;
     c.height = 512;
     const g = c.getContext("2d");
 
-    // degradê base: céu claro -> azul -> escuro
-    const grad = g.createLinearGradient(0, 0, 0, 512);
-    grad.addColorStop(0.0, "#ffffff");
-    grad.addColorStop(0.3, "#cfe0ff");
-    grad.addColorStop(0.5, "#6f95e0");
-    grad.addColorStop(0.75, "#1b2a4d");
-    grad.addColorStop(1.0, "#05080f");
+    const grad = g.createLinearGradient(0, 0, 0, c.height);
+    grad.addColorStop(0, "#101d3b");
+    grad.addColorStop(0.28, "#dce8ff");
+    grad.addColorStop(0.48, "#496ba9");
+    grad.addColorStop(0.68, "#101a35");
+    grad.addColorStop(0.82, "#7899d5");
+    grad.addColorStop(1, "#080f22");
     g.fillStyle = grad;
-    g.fillRect(0, 0, 1024, 512);
+    g.fillRect(0, 0, c.width, c.height);
 
-    // manchas escuras (sombras amarronzadas do cromo)
-    const escuras = [
-      [120, 220, 150, 120, "#2a2220"],
-      [420, 260, 200, 90, "#1a1a24"],
-      [700, 200, 130, 140, "#3a2f2a"],
-      [880, 300, 120, 80, "#10121a"],
-      [260, 360, 180, 70, "#141824"]
+    const softboxes = [
+      { x: 110, y: 78, w: 96, h: 230, color: "#ffffff" },
+      { x: 390, y: 32, w: 150, h: 145, color: "#f4f7ff" },
+      { x: 720, y: 126, w: 88, h: 240, color: "#76a7ff" },
+      { x: 920, y: 55, w: 48, h: 190, color: "#ffffff" }
     ];
-    escuras.forEach(([x, y, w, h, cor]) => {
-      g.fillStyle = cor;
-      g.beginPath();
-      g.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
-      g.fill();
-    });
 
-    // softboxes brancos (brilhos fortes)
-    const claras = [
-      [200, 90, 140, 40],
-      [600, 70, 180, 35],
-      [850, 130, 100, 50],
-      [40, 150, 80, 60]
-    ];
-    claras.forEach(([x, y, w, h]) => {
-      g.fillStyle = "#ffffff";
-      g.beginPath();
-      g.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
-      g.fill();
+    softboxes.forEach(({ x, y, w, h, color }) => {
+      const glow = g.createLinearGradient(x, y, x + w, y + h);
+      glow.addColorStop(0, "rgba(255,255,255,0)");
+      glow.addColorStop(0.5, color);
+      glow.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = glow;
+      g.fillRect(x, y, w, h);
     });
-
-    // toques de azul vivo
-    g.fillStyle = "#3d7bff";
-    g.beginPath();
-    g.ellipse(520, 190, 160, 55, 0, 0, Math.PI * 2);
-    g.fill();
 
     const tex = new THREE.CanvasTexture(c);
     tex.mapping = THREE.EquirectangularReflectionMapping;
@@ -113,129 +107,124 @@ if (canvas && typeof THREE !== "undefined") {
   scene.environment = criarAmbiente();
 
 
-  /* LUZES DE APOIO */
-  const luzPrincipal = new THREE.DirectionalLight(0xffffff, 2.2);
-  luzPrincipal.position.set(3, 5, 5);
+  const luzPrincipal = new THREE.DirectionalLight(0xffffff, 1.7);
+  luzPrincipal.position.set(3, 4, 5);
   scene.add(luzPrincipal);
-
-  const luzAzul = new THREE.DirectionalLight(0x4f86ff, 1.6);
-  luzAzul.position.set(-5, -2, 3);
+  const luzAzul = new THREE.DirectionalLight(0x477dff, 2.2);
+  luzAzul.position.set(-4, 1, 4);
   scene.add(luzAzul);
+  scene.add(new THREE.AmbientLight(0xa8c5ff, 0.35));
 
-  scene.add(new THREE.AmbientLight(0x8fa6d6, 0.4));
-
-
-  /* MATERIAL CROMADO AZUL-PRATA */
   const cromo = new THREE.MeshPhysicalMaterial({
-    color: 0xc4d4ee,
-    metalness: 1,
-    roughness: 0.07,
-    envMapIntensity: 1.5,
-    clearcoat: 1,
-    clearcoatRoughness: 0.05,
-    side: THREE.DoubleSide
+    color: 0x829ac5,
+    metalness: 0.88,
+    roughness: 0.12,
+    envMapIntensity: 1.3,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.12
   });
 
-  const cromoRebordo = new THREE.MeshPhysicalMaterial({
-    color: 0xe6eeff,
-    metalness: 1,
-    roughness: 0.04,
-    envMapIntensity: 1.8,
-    clearcoat: 1
-  });
-
-
-  /* GRUPO PRINCIPAL */
   const object = new THREE.Group();
   scene.add(object);
 
-  const R = 1.6;
-  const SEG = 128;
+  const esfera = new THREE.Mesh(
+    new THREE.SphereGeometry(1.42, 128, 128),
+    cromo
+  );
+  object.add(esfera);
 
-  function meiaEsfera(raio, superior) {
-    return new THREE.SphereGeometry(
-      raio, SEG, SEG,
-      0, Math.PI * 2,
-      superior ? 0 : Math.PI / 2,
-      Math.PI / 2
-    );
-  }
+  const satelites = [
+    { forma: "cristal", raio: 0.2, distancia: 1.92, angulo: 0.5, altura: 0.65, revelar: 0.14, cor: 0xd9e6ff },
+    { forma: "diamante", raio: 0.16, distancia: 2.08, angulo: 2.6, altura: -0.5, revelar: 0.4, cor: 0x79a7ff },
+    { forma: "faceta", raio: 0.19, distancia: 1.98, angulo: 4.5, altura: 0.35, revelar: 0.68, cor: 0xa8c4ff }
+  ].map((config) => {
+    const geometrias = {
+      cristal: new THREE.IcosahedronGeometry(config.raio, 0),
+      diamante: new THREE.OctahedronGeometry(config.raio, 0),
+      faceta: new THREE.DodecahedronGeometry(config.raio, 0)
+    };
+    const materialSatelite = cromo.clone();
+    materialSatelite.color.setHex(config.cor);
+    materialSatelite.roughness = 0.2;
+    materialSatelite.flatShading = true;
+    materialSatelite.needsUpdate = true;
 
-  function rebordo(raio, espessura) {
-    const t = new THREE.Mesh(
-      new THREE.TorusGeometry(raio, espessura, 32, 220),
-      cromoRebordo
-    );
-    t.rotation.x = Math.PI / 2;
-    return t;
-  }
+    const satelite = new THREE.Mesh(geometrias[config.forma], materialSatelite);
+    satelite.visible = false;
+    object.add(satelite);
+    return { ...config, mesh: satelite };
+  });
 
+  object.rotation.set(0.28, -0.42, -0.18);
 
-  /* TIGELA INFERIOR */
-  const tigela = new THREE.Group();
-  tigela.add(new THREE.Mesh(meiaEsfera(R, false), cromo));
-  tigela.add(rebordo(R, 0.045));
-  object.add(tigela);
-
-
-  /* CUPULA INTERNA (menor, dentro da tigela) */
-  const cupulaInterna = new THREE.Mesh(meiaEsfera(R * 0.86, true), cromo);
-  cupulaInterna.position.y = -0.05;
-  object.add(cupulaInterna);
-
-
-  /* META DE CIMA (deslocada e inclinada, criando a fresta) */
-  const tampa = new THREE.Group();
-  tampa.add(new THREE.Mesh(meiaEsfera(R * 0.98, true), cromo));
-  tampa.add(rebordo(R * 0.98, 0.05));
-  tampa.position.set(0.05, 0.14, 0.02);
-  tampa.rotation.set(-0.12, 0, -0.16);
-  object.add(tampa);
-
-
-  /* INCLINACAO BASE (mostra o interior como na referencia) */
-  const baseRot = { x: 0.62, y: -0.35, z: -0.28 };
-  object.rotation.set(baseRot.x, baseRot.y, baseRot.z);
-
-
-  /* INTERACAO COM O MOUSE */
   const alvo = { x: 0, y: 0 };
-
   document.addEventListener("mousemove", (event) => {
     alvo.x = (event.clientY / window.innerHeight - 0.5) * 0.3;
     alvo.y = (event.clientX / window.innerWidth - 0.5) * 0.4;
   });
 
-  let suave = { x: 0, y: 0 };
+  const suave = { x: 0, y: 0 };
+  let alvoScroll = window.scrollY;
+  let scrollSuave = alvoScroll;
+  window.addEventListener("scroll", () => {
+    alvoScroll = window.scrollY;
+  }, { passive: true });
 
+  const movimentoReduzido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const inicioAnimacao = performance.now();
 
-  /* ANIMACAO */
   function animate3D() {
     requestAnimationFrame(animate3D);
 
-    const tempo = Date.now() * 0.0006;
+    const tempo = (performance.now() - inicioAnimacao) * 0.001;
+    if (!movimentoReduzido) {
+      suave.x += (alvo.x - suave.x) * 0.04;
+      suave.y += (alvo.y - suave.y) * 0.04;
+    }
+    scrollSuave += (alvoScroll - scrollSuave) * 0.08;
 
-    suave.x += (alvo.x - suave.x) * 0.05;
-    suave.y += (alvo.y - suave.y) * 0.05;
+    object.rotation.x = 0.28 + (movimentoReduzido ? 0 : Math.sin(tempo * 0.8) * 0.045 + suave.x);
+    object.rotation.y = -0.42 + (movimentoReduzido ? 0 : suave.y);
+    object.rotation.z = -0.18 + (movimentoReduzido ? 0 : Math.sin(tempo * 0.6) * 0.025);
+    esfera.rotation.y = tempo * 0.12 + scrollSuave * 0.00065 + suave.y * 1.8;
+    esfera.rotation.x = (movimentoReduzido ? 0 : Math.sin(tempo * 0.35) * 0.08) + suave.x * 1.5;
+    object.position.y = movimentoReduzido ? 0 : Math.sin(tempo * 1.4) * 0.07;
+    const scrollProgress = Math.min(scrollSuave / Math.max(window.innerHeight * 0.9, 1), 1);
+    satelites.forEach((satelite, index) => {
+      const reveal = THREE.MathUtils.clamp(
+        (scrollProgress - satelite.revelar) / 0.16,
+        0,
+        1
+      );
+      const suavizarEntrada = reveal * reveal * (3 - 2 * reveal);
+      satelite.mesh.visible = suavizarEntrada > 0.01;
+      satelite.mesh.scale.setScalar(suavizarEntrada);
+      const angulo = satelite.angulo + tempo * (0.08 + index * 0.025);
+      satelite.mesh.position.set(
+        Math.cos(angulo) * satelite.distancia,
+        Math.sin(angulo) * satelite.distancia * 0.48 + satelite.altura,
+        Math.sin(angulo) * 0.75
+      );
+      satelite.mesh.rotation.y = tempo * 0.18;
+      satelite.mesh.rotation.x = tempo * 0.12 + index * 0.7;
+    });
+    if (!movimentoReduzido) {
+      luzPrincipal.position.set(
+        3 + Math.sin(tempo) * 1.5,
+        4 + Math.cos(tempo * 0.8),
+        5
+      );
+    }
 
-    object.rotation.x = baseRot.x + Math.sin(tempo * 0.8) * 0.08 + suave.x;
-    object.rotation.y = baseRot.y + Math.sin(tempo) * 0.15 + suave.y;
-    object.rotation.z = baseRot.z + Math.sin(tempo * 0.6) * 0.05;
-
-    object.position.y = Math.sin(tempo * 1.5) * 0.1;
-
-    // a tampa "respira" levemente, abrindo e fechando a fresta
-    tampa.position.y = 0.14 + Math.sin(tempo * 1.2) * 0.03;
-    tampa.rotation.z = -0.16 + Math.sin(tempo * 0.9) * 0.03;
-
-    object.scale.setScalar(window.innerWidth < 800 ? 0.8 : 1.1);
-    object.position.x = window.innerWidth < 800 ? 0.6 : 1.9;
+    const mobile = window.innerWidth < 800;
+    object.scale.setScalar(mobile ? 0.28 : 0.76);
+    object.position.x = mobile ? 0.3 : 1.95;
+    if (mobile) object.position.y += 1.45;
 
     renderer.render(scene, camera);
   }
 
   animate3D();
-
 
   /* REDIMENSIONAMENTO */
   window.addEventListener("resize", () => {

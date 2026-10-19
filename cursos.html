@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos | Portfólio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="cursos">
+
+  <div class="loader" id="loader">
+    <h1>F<span>/</span></h1>
+    <p>CARREGANDO...</p>
+    <div class="loader-track"><div id="loader-bar"></div></div>
+    <p id="loader-percent">00%</p>
+  </div>
+
+  <div class="cursor-glow"></div>
+  <canvas id="space"></canvas>
+  <canvas id="three-scene"></canvas>
+
+  <header class="topbar">
+    <a class="brand" href="index.html">F/ PORTFÓLIO</a>
+    <nav>
+      <a href="index.html">INÍCIO</a>
+      <a href="sobre.html">SOBRE</a>
+      <a href="stack.html">STACK</a>
+      <a href="cursos.html">CURSOS</a>
+      <a href="projetos.html">PROJETOS</a>
+      <a href="contato.html">CONTATO</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <p class="eyebrow reveal">04 / APRENDIZADO</p>
+    <h1 class="page-title reveal">CURSOS E<br><em>CERTIFICADOS.</em></h1>
+
+    <p class="description reveal">
+      Cursos e formações complementares que fazem parte da minha jornada.
+    </p>
+
+    <div class="info-grid">
+      <article class="info-card reveal">
+        <span>01 / ADICIONE SEU CURSO</span>
+        <h2>Nome do curso</h2>
+        <p>
+          Substitua por uma breve descrição do que aprendeu e das habilidades
+          desenvolvidas.
+        </p>
+        <p class="course-meta">INSTITUIÇÃO · CARGA HORÁRIA · ANO DE CONCLUSÃO</p>
+        <span class="course-certificate">LINK DO CERTIFICADO ↗</span>
+      </article>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

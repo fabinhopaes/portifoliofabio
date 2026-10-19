@@ -16,6 +16,27 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-color: var(--blue) var(--bg);
+  scrollbar-width: thin;
+}
+
+html::-webkit-scrollbar {
+  width: 10px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+}
+
+html::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--silver), var(--blue));
+  border: 2px solid var(--bg);
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--silver);
 }
 
 body {
@@ -98,11 +119,18 @@ em {
   position: fixed;
   z-index: 2;
   pointer-events: none;
-  width: 350px;
-  height: 350px;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
-  background: radial-gradient(circle, #477cff25, transparent 70%);
-  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #477cff50 0%, #477cff24 30%, transparent 72%);
+  opacity: 0;
+  transform: translate3d(var(--mouse-x, -1000px), var(--mouse-y, -1000px), 0) translate(-50%, -50%);
+  transition: opacity .35s ease;
+  mix-blend-mode: screen;
+}
+
+.cursor-glow.visible {
+  opacity: 1;
 }
 
 #space,
@@ -222,7 +250,7 @@ em {
 .hero-label {
   position: absolute;
   right: 7%;
-  bottom: 25%;
+  bottom: 15%;
   color: #a4b9e4;
 }
 
@@ -261,6 +289,43 @@ em {
 
 .content-block {
   max-width: 850px;
+}
+
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 310px);
+  align-items: center;
+  gap: clamp(35px, 7vw, 90px);
+  max-width: 1100px;
+}
+
+.about-intro .content-block {
+  max-width: none;
+}
+
+.about-portrait {
+  position: relative;
+  padding: 8px;
+  border: 1px solid #8aa9ed85;
+  background: linear-gradient(145deg, #7da5f025, #ffffff05);
+  box-shadow: 0 20px 70px #0005, 0 0 40px #477cff20;
+}
+
+.about-portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 32%;
+  filter: saturate(.82);
+}
+
+.about-portrait figcaption {
+  padding: 13px 5px 5px;
+  color: #a4b9e4;
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: 1.4px;
+  line-height: 1.6;
 }
 
 .content-block > p:not(.description) {
@@ -306,6 +371,20 @@ em {
   line-height: 1.7;
 }
 
+.course-meta,
+.course-certificate {
+  display: block;
+  margin-top: 22px;
+  color: #c2d3f2;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: 1.2px;
+  line-height: 1.8;
+}
+
+.course-certificate {
+  color: #9db6ed;
+}
+
 .project-grid {
   display: grid;
   gap: 45px;
@@ -328,6 +407,75 @@ em {
   border: 1px solid #8aa9ed65;
   transition: transform .6s, filter .6s;
   filter: saturate(.8);
+}
+
+.project-preview {
+  position: relative;
+  display: flex;
+  min-height: 320px;
+  padding: 30px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid #8aa9ed65;
+  background:
+    radial-gradient(ellipse at 70% 45%, #477cff38, transparent 42%),
+    linear-gradient(145deg, #101f43, #07112a 72%);
+}
+
+.project-preview::before,
+.project-preview::after {
+  position: absolute;
+  content: "";
+  border: 1px solid #a8c1f43b;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.project-preview::before {
+  width: 230px;
+  height: 230px;
+  right: -35px;
+  top: 35px;
+}
+
+.project-preview::after {
+  width: 170px;
+  height: 170px;
+  right: -5px;
+  top: 65px;
+  border-color: #5d8fff70;
+}
+
+.project-preview-label {
+  position: relative;
+  z-index: 1;
+  color: #a4b9e4;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: 2px;
+}
+
+.project-preview strong {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(32px, 5vw, 60px);
+  line-height: .95;
+  letter-spacing: -3px;
+}
+
+.project-preview-orbit {
+  position: absolute;
+  width: 105px;
+  height: 105px;
+  right: 25%;
+  top: 35%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #a8c4ff 8%, #477cff 35%, #111e42 72%);
+  box-shadow: 0 0 45px #477cff65, inset -12px -14px 25px #050b1d;
+}
+
+.project-card-placeholder .tech {
+  color: #a4b9e4;
 }
 
 .project-card img:hover {
@@ -430,6 +578,14 @@ em {
   .info-grid,
   .project-card {
     grid-template-columns: 1fr;
+  }
+
+  .about-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .about-portrait {
+    width: min(100%, 330px);
   }
 
   .page-title {
